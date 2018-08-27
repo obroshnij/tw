@@ -1,0 +1,53 @@
+{% extends 'gui/layout.html' %}
+{% load bootstrap4 %}
+{% block content %}
+  <div class='row'>
+    <div class='col-md-12'>
+      <form action="/" method="post" enctype="multipart/form-data" class="form">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        {% buttons %}
+          <input type="submit" value="Process" class="btn btn-primary">
+        {% endbuttons %}
+      </form>
+    </div>
+  </div>
+  {% if abi %}
+    <div class='row'>
+      <div class='col-md-12'>
+        <div id="accordion">
+          {% for property in abi.properties %}
+            <div class="card">
+              <div class="card-header" id="{{ property.name }}-header">
+                <h5 class="mb-0">
+                  <button class="btn btn-link" data-toggle="collapse" data-target="#{{ property.name }}" aria-expanded="false" aria-controls="{{ property.name }}">
+                    {{ property.name }}
+                    {% if property.is_function %}<span class="badge badge-success">Function</span>{% endif %}
+                    {% if property.is_constructor %}<span class="badge badge-info">Constructor</span>{% endif %}
+                    {% if property.is_event %}<span class="badge badge-secondary">Event</span>{% endif %}
+                  </button>
+                </h5>
+              </div>
+              <div id="{{ property.name }}" class="collapse" aria-labelledby="{{ property.name }}-header" data-parent="#accordion">
+                <div class="card-body">
+                  <form action="/" method="patch" enctype="multipart/form-data" class="form property-form">
+                    {% csrf_token %}
+                      {% for input in property.inputs %}
+                        <div class="input-group input-group-sm mb-3">
+                          <div class="input-group-prepend">
+                            <span class="input-group-text" id="inputgroup-{{ inputs.name }}">{{ input.name }}</span>
+                          </div>
+                          <input name="{{ input.name }}" type="{{ input.html_type }}" class="form-control" aria-label="Small" aria-describedby="inputgroup-{{ inputs.name }}" placeholder="{{ input.type }}">
+                        </div>
+                      {% endfor %}
+                    <input type="submit" value="Submit Transaction" class="btn btn-primary">
+                  </form>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}
