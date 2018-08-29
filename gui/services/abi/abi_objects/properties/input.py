@@ -1,4 +1,5 @@
 import re
+import pdb
 
 class Input:
     def __init__(self, data):
@@ -47,7 +48,7 @@ class Input:
 
     @property
     def html_type(self):
-        if self.type:
+        if self.defined_type in self.__class__.type_mapping():
             return self.__class__.type_mapping()[self.defined_type]
         else:
             return 'text'
@@ -56,13 +57,16 @@ class Input:
     def type_mapping():
         return {
             'uint': 'number',
+            'int': 'number',
             'address': 'number',
             'bytes': 'text',
             'bool': 'checkbox',
-            'int': 'number',
-            'string': 'text'
+            'string': 'text',
+            'function': 'number',
+            'ufixed': 'number',
+            'fixed': 'number'
         }
 
     @staticmethod
     def defined_types():
-        return ['uint', 'int', 'address', 'bool', 'fixed', 'ufixed', 'bytes', 'function']
+        return ['uint', 'int', 'address', 'bool', 'fixed', 'ufixed', 'bytes', 'function', 'string']
