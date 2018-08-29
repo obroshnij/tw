@@ -1,4 +1,4 @@
-import pdb
+import re
 
 class Input:
     def __init__(self, data):
@@ -13,23 +13,56 @@ class Input:
         return self.data['type']
 
     @property
+    def defined_types_regex(self):
+        types_regex_part = '|'.join(list(map(lambda x: f'({x})', self.__class__.defined_types())))
+        return re.compile(fr'(?P<data_type>{types_regex_part})')
+
+    @property
+    def is_array(self):
+        matched_data = self.array_regex.match(self.type)
+        return matched_data and matched_data['array']
+
+    @property
+    def array_size(self):
+        matched_data = self.array_regex.match(self.type)
+        return matched_data and matched_data['num']
+
+    @property
+    def array_regex(self):
+        return re.compile(r'.*?(?P<array>\[(?P<num>\d+)?\])$')
+
+    @property
+    def defined_type(self):
+        matched_type = self.defined_types_regex.match(self.type)
+        return matched_type and matched_type['data_type']
+
+    @property
+    def input_items(self):
+        items = []
+        sample_data = self.data.copy()
+        sample_data['type'] = self.defined_type
+        for i in range(int(self.array_size)):
+            items.append(self.__class__(sample_data))
+        return items
+
+    @property
     def html_type(self):
         if self.type:
-            return self.__class__.type_mapping()[self.type]
+            return self.__class__.type_mapping()[self.defined_type]
         else:
             return 'text'
 
     @staticmethod
     def type_mapping():
         return {
-            'uint256': 'number',
+            'uint': 'number',
             'address': 'number',
-            'address[]': 'number',
-            'bytes32': 'file',
-            'bytes': 'file',
-            'bytes32[]': 'file',
+            'bytes': 'text',
             'bool': 'checkbox',
-            'uint8': 'number',
-            'int64': 'number',
+            'int': 'number',
             'string': 'text'
         }
+
+    @staticmethod
+    def defined_types():
+        return ['uint', 'int', 'address', 'bool', 'fixed', 'ufixed', 'bytes', 'function']

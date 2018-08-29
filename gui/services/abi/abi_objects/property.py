@@ -21,7 +21,7 @@ class Property:
     def name(self):
         if 'name' in self.data:
             return self.data['name']
-        elif self.is_constructor():
+        elif self.is_constructor:
             return 'Constructor'
         else:
             return '_'

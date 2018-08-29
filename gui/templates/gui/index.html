@@ -37,7 +37,18 @@
                           <div class="input-group-prepend">
                             <span class="input-group-text" id="inputgroup-{{ inputs.name }}">{{ input.name }}</span>
                           </div>
-                          <input name="{{ input.name }}" type="{{ input.html_type }}" class="form-control" aria-label="Small" aria-describedby="inputgroup-{{ inputs.name }}" placeholder="{{ input.type }}">
+                          {% if input.is_array %}
+                            {% if input.array_size %}
+                              {% for another_input in input.input_items %}
+                                <input name="{{ another_input.name }}[]" type="{{ another_input.html_type }}" class="form-control" aria-label="Small" aria-describedby="inputgroup-{{ inputs.name }}" placeholder="{{ another_input.type }}">
+                              {% endfor %}
+                            {% else %}
+                              <input name="{{ input.name }}" type="{{ input.html_type }}" class="form-control" aria-label="Small" aria-describedby="inputgroup-{{ inputs.name }}" placeholder="{{ input.defined_type }}">
+                              <button class="btn btn-info add-input" data-type="{{ input.html_type }}" data-name="{{ input.name }}" data-placeholder="{{ input.defined_type }}">
+                            {% endif %}
+                          {% else %}
+                            <input name="{{ input.name }}" type="{{ input.html_type }}" class="form-control" aria-label="Small" aria-describedby="inputgroup-{{ inputs.name }}" placeholder="{{ input.type }}">
+                          {% endif %}
                         </div>
                       {% endfor %}
                     <input type="submit" value="Submit Transaction" class="btn btn-primary">
